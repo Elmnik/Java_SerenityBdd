@@ -3,21 +3,18 @@ package com.bdg.api.stepdefinitions;
 import com.bdg.api.interactions.GenericRest;
 import com.bdg.api.models.UserData;
 import io.cucumber.java.Before;
-import net.serenitybdd.rest.SerenityRest;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
 import net.serenitybdd.screenplay.rest.abilities.CallAnApi;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.When;
-import io.cucumber.java.en.Then;
 
 import static net.serenitybdd.screenplay.actors.OnStage.*;
 import static net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse;
 import static org.hamcrest.Matchers.*;
 
 public class UserManagementStepDefinitions {
-
-    private UserData responseModel;
 
     @Before
     public void setTheStage() {
@@ -32,84 +29,76 @@ public class UserManagementStepDefinitions {
     @When("he consults the list of users")
     public void getListUsers() {
         theActorInTheSpotlight().attemptsTo(
-            GenericRest.execute("GET", "/api/users?page=2", null)
+                GenericRest.execute("GET", "/users", null) // JSONPlaceholder usa /users
         );
     }
 
     @Then("the response should contain at least one user with id {int}")
     public void verifyUserInList(int id) {
         theActorInTheSpotlight().should(
-            seeThatResponse("Verify user ID in list", res ->
-                res.statusCode(200)
-                   .body("data.id", hasItem(id))
-            )
+                seeThatResponse("Verify user ID in list", res ->
+                        res.statusCode(200)
+                                .body("id", hasItem(id)) // JSONPlaceholder devuelve una lista de objetos directamente
+                )
         );
     }
 
-    @When("he registers a user with email {string} and password {string}")
-    public void registerUser(String email, String password) {
-        String body = String.format("{\"email\": \"%s\", \"password\": \"%s\"}", email, password);
+    @When("he registers a user with name {string} and email {string}")
+    public void registerUser(String name, String email) {
+        // ¡Usando el Builder de tu modelo actualizado!
+        UserData user = UserData.builder()
+                .name(name)
+                .email(email)
+                .build();
+
         theActorInTheSpotlight().attemptsTo(
-            GenericRest.execute("POST", "/api/register", body)
+                GenericRest.execute("POST", "/users", user)
         );
-
     }
 
-    @Then("the response body should contain a token")
-    public void verifyToken() {
+    @Then("the response body should contain the email {string}")
+    public void verifyEmailInResponse(String email) {
         theActorInTheSpotlight().should(
-            seeThatResponse("Verify authentication token", res ->
-                res.body("token", notNullValue())
-            )
+                seeThatResponse("Verify created user email", res ->
+                        res.statusCode(201)
+                                .body("email", is(email))
+                )
         );
     }
 
-    @When("he attempts to register a user without password")
-    public void registerWithoutPassword() {
+    @When("he updates the name to {string} and the username to {string}")
+    public void updateUserInfo(String name, String username) {
+        UserData updateData = UserData.builder()
+                .name(name)
+                .username(username)
+                .build();
+
         theActorInTheSpotlight().attemptsTo(
-            GenericRest.execute("POST", "/api/register", "{\"email\": \"sydney@fife\"}")
+                GenericRest.execute("PUT", "/users/2", updateData)
         );
     }
 
-    @Then("the error message should be {string}")
-    public void verifyErrorMessage(String message) {
-        theActorInTheSpotlight().should(
-            seeThatResponse("Verify error message", res ->
-                res.statusCode(400)
-                   .body("error", equalTo(message))
-            )
-        );
-    }
-
-    @When("he updates the name to {string} and the job to {string}")
-    public void updateUserInfo(String name, String job) {
-        String body = String.format("{\"name\": \"%s\", \"job\": \"%s\"}", name, job);
-        theActorInTheSpotlight().attemptsTo(
-            GenericRest.execute("PUT", "/api/users/2", body)
-        );
-    }
-
-    @Then("the response body should contain the name {string}")
+    @Then("the response body should contain the updated name {string}")
     public void verifyNameInResponse(String name) {
         theActorInTheSpotlight().should(
-            seeThatResponse("Verify updated name", res ->
-                res.statusCode(200)
-                   .body("name", is(name))
-            )
+                seeThatResponse("Verify updated name", res ->
+                        res.statusCode(200)
+                                .body("name", is(name))
+                )
         );
     }
 
     @When("he deletes the user with id {int}")
     public void deleteUser(int id) {
         theActorInTheSpotlight().attemptsTo(
-            GenericRest.execute("DELETE", "/api/users/" + id, null)
+                GenericRest.execute("DELETE", "/users/" + id, null)
         );
     }
 
     @Then("the response code should be {int}")
     public void verifyStatusCode(int code) {
         theActorInTheSpotlight().should(
-            seeThatResponse("Verify HTTP status code", res -> res.statusCode(code))
+                seeThatResponse("Verify HTTP status code", res -> res.statusCode(code))
         );
     }
 }

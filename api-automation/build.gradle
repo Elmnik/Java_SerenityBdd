@@ -1,8 +1,18 @@
 dependencies {
-    // Librerías específicas para API que NO están en la raíz
+    // Las que ya tenés (muy bien ahí)
     testImplementation "net.serenity-bdd:serenity-screenplay-rest:4.0.15"
     testImplementation "net.serenity-bdd:serenity-rest-assured:4.0.15"
-    
-    // Necesario para procesar JSON a objetos Java
     testImplementation "com.fasterxml.jackson.core:jackson-databind:2.15.2"
+
+    // 🚀 LAS QUE TE FALTAN (Motores de ejecución)
+    testImplementation "net.serenity-bdd:serenity-cucumber:4.0.15" // Conecta Serenity con Cucumber
+    testImplementation "org.junit.platform:junit-platform-suite:1.10.0" // Para el @Suite de tu Runner
+    testRuntimeOnly "io.cucumber:cucumber-junit-platform-engine:7.14.0" // El "motor" que JUnit 5 no encuentra
+}
+
+test {
+    useJUnitPlatform()
+    // Forzamos a que los JSON caigan en la raíz para que el aggregate los vea
+    systemProperty "serenity.outputDirectory", "${project.rootDir}/target/site/serenity"
+    systemProperty "serenity.project.name", "BDG API Challenge"
 }

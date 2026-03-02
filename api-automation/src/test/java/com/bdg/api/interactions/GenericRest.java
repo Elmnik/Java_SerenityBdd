@@ -7,20 +7,21 @@ import net.serenitybdd.screenplay.rest.interactions.Delete;
 import net.serenitybdd.screenplay.rest.interactions.Get;
 import net.serenitybdd.screenplay.rest.interactions.Post;
 import net.serenitybdd.screenplay.rest.interactions.Put;
+import io.restassured.http.ContentType;
 
 public class GenericRest implements Interaction {
 
     private final String method;
     private final String resource;
-    private final String body;
+    private final Object body; // Cambiado de String a Object
 
-    public GenericRest(String method, String resource, String body) {
+    public GenericRest(String method, String resource, Object body) {
         this.method = method;
         this.resource = resource;
         this.body = body;
     }
 
-    public static GenericRest execute(String method, String resource, String body) {
+    public static GenericRest execute(String method, String resource, Object body) {
         return instrumented(GenericRest.class, method, resource, body);
     }
 
@@ -31,23 +32,22 @@ public class GenericRest implements Interaction {
                 actor.attemptsTo(Get.resource(resource));
                 break;
             case "POST":
-                // Se usa .to() para POST y se asegura el header de JSON
                 actor.attemptsTo(
-                    Post.to(resource)
-                        .with(request -> request.header("Content-Type", "application/json")
-                        .body(body))
+                        Post.to(resource)
+                                .with(request -> request
+                                        .contentType(ContentType.JSON) // Más limpio que el header manual
+                                        .body(body))
                 );
                 break;
             case "PUT":
-                // Se usa .to() para PUT
                 actor.attemptsTo(
-                    Put.to(resource)
-                        .with(request -> request.header("Content-Type", "application/json")
-                        .body(body))
+                        Put.to(resource)
+                                .with(request -> request
+                                        .contentType(ContentType.JSON)
+                                        .body(body))
                 );
                 break;
             case "DELETE":
-                // Se usa .from() para DELETE
                 actor.attemptsTo(Delete.from(resource));
                 break;
             default:
