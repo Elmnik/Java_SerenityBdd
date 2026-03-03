@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserData {
     private Integer id;
-    private String name;     // JSONPlaceholder usa 'name' en lugar de first/last name
-    private String username; // Campo adicional útil en esta API
+    private String name;
+    private String username;
     private String email;
-    private String phone;    // Opcional, pero existe en la API
-    private String website;  // Opcional
+    private String phone;
+    private String website;
 }
 

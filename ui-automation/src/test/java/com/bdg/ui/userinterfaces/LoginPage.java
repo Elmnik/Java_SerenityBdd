@@ -5,7 +5,7 @@ import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-@DefaultUrl("https://www.saucedemo.com")
+@DefaultUrl("https://www.saucedemo.com") //Se usa una sola instancia con url
 public class LoginPage extends PageObject {
 
     public static final Target USERNAME_FIELD = Target.the("campo usuario")

@@ -44,7 +44,6 @@ public class SauceDemoStepDefinitions {
 
     @Given("que el actor se encuentra en la página de inicio de sesión")
     public void queElActorSeEncuentraEnLaPaginaDeInicioDeSesion() {
-        // Instanciamos el PageObject que tiene la @DefaultUrl
         LoginPage sauceloginPage = new LoginPage();
 
         theActorCalled("Elmer").attemptsTo(
@@ -85,13 +84,11 @@ public class SauceDemoStepDefinitions {
 
     @Then("debería ver el mensaje de error {string}")
     public void verifyErrorMessage(String expectedError) {
-        // 1. Esperamos hasta 5 segundos a que el mensaje aparezca
         theActorInTheSpotlight().attemptsTo(
                 WaitUntil.the(LoginPage.ERROR_MESSAGE, WebElementStateMatchers.isVisible())
                         .forNoMoreThan(5).seconds()
         );
 
-        // 2. Ahora sí, hacemos la validación
         theActorInTheSpotlight().should(
                 seeThat("El mensaje de error",
                         Text.of(LoginPage.ERROR_MESSAGE),

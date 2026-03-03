@@ -29,7 +29,7 @@ public class UserManagementStepDefinitions {
     @When("he consults the list of users")
     public void getListUsers() {
         theActorInTheSpotlight().attemptsTo(
-                GenericRest.execute("GET", "/users", null) // JSONPlaceholder usa /users
+                GenericRest.execute("GET", "/users", null) // JSONPlaceholder
         );
     }
 
@@ -38,14 +38,13 @@ public class UserManagementStepDefinitions {
         theActorInTheSpotlight().should(
                 seeThatResponse("Verify user ID in list", res ->
                         res.statusCode(200)
-                                .body("id", hasItem(id)) // JSONPlaceholder devuelve una lista de objetos directamente
+                                .body("id", hasItem(id))
                 )
         );
     }
 
     @When("he registers a user with name {string} and email {string}")
     public void registerUser(String name, String email) {
-        // ¡Usando el Builder de tu modelo actualizado!
         UserData user = UserData.builder()
                 .name(name)
                 .email(email)

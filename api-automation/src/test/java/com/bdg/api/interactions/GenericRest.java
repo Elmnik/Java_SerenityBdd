@@ -35,7 +35,7 @@ public class GenericRest implements Interaction {
                 actor.attemptsTo(
                         Post.to(resource)
                                 .with(request -> request
-                                        .contentType(ContentType.JSON) // Más limpio que el header manual
+                                        .contentType(ContentType.JSON)
                                         .body(body))
                 );
                 break;
